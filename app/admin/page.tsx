@@ -340,15 +340,23 @@ export default function AdminPage() {
     document.body.style.background = t.bg(theme)
   }, [theme])
 
-  const themeChannel = useCallback(() => supabase.channel('app-theme'), [])
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'theme').single()
+      .then(({ data }) => { if (data) setTheme(data.value as Theme) })
 
-  const toggleTheme = useCallback(() => {
-    setTheme(th => {
-      const next: Theme = th === 'dark' ? 'light' : 'dark'
-      themeChannel().send({ type: 'broadcast', event: 'theme', payload: { theme: next } })
-      return next
-    })
-  }, [themeChannel])
+    const channel = supabase
+      .channel('settings-theme')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings', filter: 'key=eq.theme' },
+        ({ new: row }) => setTheme((row as { value: Theme }).value))
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
+
+  const toggleTheme = useCallback(async () => {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    await supabase.from('settings').update({ value: next }).eq('key', 'theme')
+  }, [theme])
 
   const fetchQuestions = useCallback(async () => {
     const { data: qs } = await supabase

@@ -27,6 +27,18 @@ export default function ConsumerPage() {
     document.body.style.background = colors.bg(theme)
   }, [theme])
 
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'theme').single()
+      .then(({ data }) => { if (data) setTheme(data.value as Theme) })
+
+    const channel = supabase
+      .channel('settings-theme-consumer')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings', filter: 'key=eq.theme' },
+        ({ new: row }) => setTheme((row as { value: Theme }).value))
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
+
   const fetchActiveQuestion = useCallback(async () => {
     const { data } = await supabase
       .from('questions')
@@ -48,16 +60,8 @@ export default function ConsumerPage() {
       })
       .subscribe()
 
-    const themeChannel = supabase
-      .channel('app-theme')
-      .on('broadcast', { event: 'theme' }, ({ payload }) => {
-        setTheme(payload.theme as Theme)
-      })
-      .subscribe()
-
     return () => {
       supabase.removeChannel(questionChannel)
-      supabase.removeChannel(themeChannel)
     }
   }, [fetchActiveQuestion])
 
