@@ -4,10 +4,28 @@ import { useEffect, useState, useCallback } from 'react'
 import { supabase, type Question, type Answer } from '@/lib/supabase'
 import { CheckCircle } from 'lucide-react'
 
+type Theme = 'dark' | 'light'
+
+const colors = {
+  bg:       (th: Theme) => th === 'dark' ? '#2D2D32' : '#f0f4f7',
+  text:     (th: Theme) => th === 'dark' ? '#ffffff'  : '#2D2D32',
+  textMid:  (th: Theme) => th === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)',
+  btnBg:    (th: Theme) => th === 'dark' ? 'rgba(2,87,123,0.25)'    : 'rgba(37,151,188,0.12)',
+  btnBorder:(th: Theme) => th === 'dark' ? 'rgba(37,151,188,0.35)'  : 'rgba(37,151,188,0.5)',
+  btnDimBg: (th: Theme) => th === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+  btnDimBorder:(th: Theme) => th === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
+  labelColor:(th: Theme) => th === 'dark' ? 'rgba(37,151,188,0.9)'  : '#2597BC',
+}
+
 export default function ConsumerPage() {
   const [question, setQuestion] = useState<Question | null>(null)
   const [voted, setVoted] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [theme, setTheme] = useState<Theme>('dark')
+
+  useEffect(() => {
+    document.body.style.background = colors.bg(theme)
+  }, [theme])
 
   const fetchActiveQuestion = useCallback(async () => {
     const { data } = await supabase
@@ -15,7 +33,6 @@ export default function ConsumerPage() {
       .select('*, answers(*)')
       .eq('is_active', true)
       .maybeSingle()
-
     setQuestion(data ?? null)
     setLoading(false)
   }, [])
@@ -23,7 +40,7 @@ export default function ConsumerPage() {
   useEffect(() => {
     fetchActiveQuestion()
 
-    const channel = supabase
+    const questionChannel = supabase
       .channel('active-question')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'questions' }, () => {
         setVoted(null)
@@ -31,7 +48,17 @@ export default function ConsumerPage() {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    const themeChannel = supabase
+      .channel('app-theme')
+      .on('broadcast', { event: 'theme' }, ({ payload }) => {
+        setTheme(payload.theme as Theme)
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(questionChannel)
+      supabase.removeChannel(themeChannel)
+    }
   }, [fetchActiveQuestion])
 
   const handleVote = async (answer: Answer) => {
@@ -43,7 +70,7 @@ export default function ConsumerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#2D2D32' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: colors.bg(theme) }}>
         <div className="w-8 h-8 border-2 border-white/20 border-t-[#2597BC] rounded-full animate-spin" />
       </div>
     )
@@ -51,9 +78,9 @@ export default function ConsumerPage() {
 
   if (!question) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#2D2D32' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: colors.bg(theme) }}>
         <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl" style={{ background: 'rgba(37,151,188,0.1)' }}>⏳</div>
-        <p className="text-lg" style={{ color: 'rgba(255,255,255,0.4)' }}>Geen actieve vraag op dit moment.</p>
+        <p className="text-lg" style={{ color: colors.textMid(theme) }}>Geen actieve vraag op dit moment.</p>
       </div>
     )
   }
@@ -61,24 +88,20 @@ export default function ConsumerPage() {
   const answers = question.answers ?? []
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-8 py-6 relative overflow-hidden" style={{ background: '#2D2D32' }}>
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top, rgba(2,87,123,0.25) 0%, transparent 60%)' }} />
+    <div className="min-h-screen flex flex-col items-center px-8 py-6 relative overflow-hidden" style={{ background: colors.bg(theme) }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top, rgba(2,87,123,0.2) 0%, transparent 60%)' }} />
 
-      {/* Branding */}
       <div className="mt-2 mb-1 text-sm font-bold tracking-widest uppercase" style={{ color: '#2597BC' }}>
         VRD Metaalrecycling
       </div>
-      <div className="mb-6 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.45)' }}>
+      <div className="mb-6 text-sm font-medium" style={{ color: colors.textMid(theme) }}>
         Wij betalen voor oude metalen
       </div>
 
-      {/* Question */}
-      <h1 className="text-center text-6xl font-bold text-white mb-5 max-w-4xl leading-tight">
+      <h1 className="text-center text-6xl font-bold mb-5 max-w-4xl leading-tight" style={{ color: colors.text(theme) }}>
         {question.text}
       </h1>
 
-      {/* Answers */}
       <div
         className={`w-full grid gap-4 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}
         style={{ height: '58vh' }}
@@ -97,37 +120,27 @@ export default function ConsumerPage() {
                 boxShadow: '0 0 60px rgba(37,151,188,0.45)',
                 border: '2px solid #2597BC',
               } : isDisabled ? {
-                background: 'rgba(255,255,255,0.04)',
-                border: '2px solid rgba(255,255,255,0.06)',
+                background: colors.btnDimBg(theme),
+                border: `2px solid ${colors.btnDimBorder(theme)}`,
               } : {
-                background: 'rgba(2,87,123,0.25)',
-                border: '2px solid rgba(37,151,188,0.35)',
+                background: colors.btnBg(theme),
+                border: `2px solid ${colors.btnBorder(theme)}`,
               }}
               className={`
                 relative w-full h-full rounded-3xl px-6 text-center
                 transition-all duration-300 select-none flex flex-col items-center justify-center gap-3
-                ${isVoted
-                  ? 'text-white scale-[1.01]'
-                  : isDisabled
-                    ? 'cursor-default'
-                    : 'text-white cursor-pointer hover:scale-[1.01] active:scale-[0.99]'
-                }
+                ${isVoted ? 'scale-[1.01]' : isDisabled ? 'cursor-default' : 'cursor-pointer hover:scale-[1.01] active:scale-[0.99]'}
               `}
             >
-              {isVoted && (
-                <CheckCircle className="absolute top-5 right-5 w-8 h-8 text-white/80" />
-              )}
-              <span
-                className="text-2xl font-bold"
-                style={{ color: isVoted ? 'rgba(255,255,255,0.65)' : 'rgba(37,151,188,0.9)' }}
-              >
+              {isVoted && <CheckCircle className="absolute top-5 right-5 w-8 h-8 text-white/80" />}
+              <span className="text-2xl font-bold" style={{ color: isVoted ? 'rgba(255,255,255,0.65)' : colors.labelColor(theme) }}>
                 {String.fromCharCode(65 + i)}
               </span>
               <span
                 className="font-bold leading-tight"
                 style={{
                   fontSize: 'clamp(1.5rem, 3.5vw, 2.8rem)',
-                  color: isDisabled && !isVoted ? 'rgba(255,255,255,0.2)' : 'white',
+                  color: isVoted ? 'white' : isDisabled ? colors.textMid(theme) : colors.text(theme),
                 }}
               >
                 {answer.text}
@@ -137,7 +150,6 @@ export default function ConsumerPage() {
         })}
       </div>
 
-      {/* Feedback */}
       <div
         className={`mt-5 text-base font-semibold transition-opacity duration-500 flex items-center gap-2 ${voted ? 'opacity-100' : 'opacity-0'}`}
         style={{ color: '#2597BC' }}

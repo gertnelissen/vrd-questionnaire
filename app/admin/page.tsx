@@ -340,6 +340,16 @@ export default function AdminPage() {
     document.body.style.background = t.bg(theme)
   }, [theme])
 
+  const themeChannel = useCallback(() => supabase.channel('app-theme'), [])
+
+  const toggleTheme = useCallback(() => {
+    setTheme(th => {
+      const next: Theme = th === 'dark' ? 'light' : 'dark'
+      themeChannel().send({ type: 'broadcast', event: 'theme', payload: { theme: next } })
+      return next
+    })
+  }, [themeChannel])
+
   const fetchQuestions = useCallback(async () => {
     const { data: qs } = await supabase
       .from('questions')
@@ -396,7 +406,7 @@ export default function AdminPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setTheme(th => th === 'dark' ? 'light' : 'dark')}
+            onClick={toggleTheme}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-black/10"
             style={{ color: t.textMuted(theme), border: `1px solid ${t.border(theme)}` }}
           >
