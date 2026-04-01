@@ -5,7 +5,13 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh repo:*)",
+      "Bash(ssh:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(git config:*)",
+      "Bash(security find-internet-password:*)"
     ]
   }
 }

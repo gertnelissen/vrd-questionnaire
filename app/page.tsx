@@ -43,16 +43,16 @@ export default function ConsumerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#2D2D32' }}>
+        <div className="w-8 h-8 border-2 border-white/20 border-t-[#2597BC] rounded-full animate-spin" />
       </div>
     )
   }
 
   if (!question) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-2xl">⏳</div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#2D2D32' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl" style={{ background: 'rgba(37,151,188,0.1)' }}>⏳</div>
         <p className="text-white/40 text-lg">Geen actieve vraag op dit moment.</p>
       </div>
     )
@@ -61,16 +61,25 @@ export default function ConsumerPage() {
   const answers = question.answers ?? []
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-10 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/30 via-transparent to-purple-950/30 pointer-events-none" />
+    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-10 relative overflow-hidden" style={{ background: '#2D2D32' }}>
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top, rgba(2,87,123,0.3) 0%, transparent 60%)' }} />
 
-      <div className="mb-3 text-xs font-semibold tracking-widest text-white/20 uppercase">VRD Questionnaire</div>
+      {/* Branding */}
+      <div className="mb-1 text-xs font-semibold tracking-widest uppercase" style={{ color: '#2597BC' }}>
+        VRD Metaalrecycling
+      </div>
+      <div className="mb-8 text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        Wij betalen voor oude metalen
+      </div>
 
-      <h1 className="text-center text-3xl font-bold text-white mb-10 max-w-3xl leading-snug">
+      {/* Question */}
+      <h1 className="text-center text-4xl font-bold text-white mb-12 max-w-3xl leading-snug">
         {question.text}
       </h1>
 
-      <div className={`w-full max-w-4xl grid gap-4 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+      {/* Answers */}
+      <div className={`w-full max-w-5xl grid gap-5 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
         {answers.map((answer, i) => {
           const isVoted = voted === answer.id
           const isDisabled = voted !== null
@@ -80,21 +89,32 @@ export default function ConsumerPage() {
               key={answer.id}
               onClick={() => handleVote(answer)}
               disabled={isDisabled}
+              style={isVoted ? {
+                background: '#2597BC',
+                boxShadow: '0 0 50px rgba(37,151,188,0.5)',
+                border: '2px solid #2597BC',
+              } : isDisabled ? {
+                background: 'rgba(255,255,255,0.04)',
+                border: '2px solid rgba(255,255,255,0.06)',
+              } : {
+                background: 'rgba(2,87,123,0.25)',
+                border: '2px solid rgba(37,151,188,0.3)',
+              }}
               className={`
-                relative group rounded-2xl px-6 py-8 text-xl font-semibold text-center
+                relative rounded-2xl px-8 py-10 text-2xl font-semibold text-center
                 transition-all duration-300 select-none
                 ${isVoted
-                  ? 'bg-emerald-500 text-white scale-[1.02] shadow-[0_0_40px_rgba(16,185,129,0.4)]'
+                  ? 'text-white scale-[1.02]'
                   : isDisabled
-                    ? 'bg-white/5 text-white/30 cursor-default'
-                    : 'bg-white/10 hover:bg-white/20 active:scale-[0.98] text-white cursor-pointer shadow-lg border border-white/10 hover:border-white/30'
+                    ? 'text-white/25 cursor-default'
+                    : 'text-white cursor-pointer hover:scale-[1.02] active:scale-[0.98]'
                 }
               `}
             >
               {isVoted && (
-                <CheckCircle className="absolute top-3 right-3 w-5 h-5 text-white/80" />
+                <CheckCircle className="absolute top-4 right-4 w-6 h-6 text-white/80" />
               )}
-              <span className="block text-white/30 text-sm font-normal mb-1">
+              <span className="block text-sm font-normal mb-2" style={{ color: isVoted ? 'rgba(255,255,255,0.6)' : 'rgba(37,151,188,0.7)' }}>
                 {String.fromCharCode(65 + i)}
               </span>
               {answer.text}
@@ -103,7 +123,12 @@ export default function ConsumerPage() {
         })}
       </div>
 
-      <div className={`mt-8 text-sm text-emerald-400 font-medium transition-opacity duration-500 ${voted ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Feedback */}
+      <div
+        className={`mt-10 text-sm font-medium transition-opacity duration-500 flex items-center gap-2 ${voted ? 'opacity-100' : 'opacity-0'}`}
+        style={{ color: '#2597BC' }}
+      >
+        <CheckCircle className="w-4 h-4" />
         Jouw antwoord is geregistreerd!
       </div>
     </div>

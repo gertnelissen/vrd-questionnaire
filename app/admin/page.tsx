@@ -5,7 +5,7 @@ import { supabase, type Question, type Answer } from '@/lib/supabase'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
 } from 'recharts'
-import { Plus, Trash2, CheckCircle2, RotateCcw, ChevronDown, ChevronUp, X } from 'lucide-react'
+import { Plus, Trash2, CheckCircle2, Zap, ChevronDown, ChevronUp, X } from 'lucide-react'
 
 const ADMIN_PASSWORD = '0852'
 
@@ -29,8 +29,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6">
-      <div className="text-xs font-semibold tracking-widest text-white/20 uppercase">VRD Questionnaire</div>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6" style={{ background: '#2D2D32' }}>
+      <div className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: '#2597BC' }}>VRD Metaalrecycling</div>
       <h1 className="text-2xl font-bold text-white">Admin</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full max-w-xs">
         <input
@@ -39,12 +39,17 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           onChange={e => { setInput(e.target.value); setError(false) }}
           placeholder="Wachtwoord"
           autoFocus
-          className={`rounded-xl px-4 py-3 bg-white/10 text-white placeholder-white/30 outline-none border ${error ? 'border-red-500' : 'border-white/10 focus:border-white/40'} transition-colors`}
+          className={`rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none border transition-colors`}
+          style={{
+            background: 'rgba(2,87,123,0.2)',
+            borderColor: error ? '#ef4444' : 'rgba(37,151,188,0.3)',
+          }}
         />
         {error && <p className="text-red-400 text-sm text-center">Verkeerd wachtwoord</p>}
         <button
           type="submit"
-          className="rounded-xl px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors"
+          className="rounded-xl px-4 py-3 text-white font-semibold transition-all hover:opacity-90"
+          style={{ background: 'linear-gradient(135deg, #2597BC, #02577B)' }}
         >
           Inloggen
         </button>
@@ -53,7 +58,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   )
 }
 
-const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6']
+const CHART_COLORS = ['#2597BC', '#02577B', '#4db8d4', '#016a94', '#7dd3e8', '#015f84']
 
 type AnswerWithStats = Answer & { vote_count: number }
 
@@ -71,14 +76,26 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
   }))
 
   return (
-    <div className={`rounded-2xl border transition-all duration-300 ${isActive ? 'border-indigo-500/60 bg-indigo-950/30' : 'border-white/10 bg-white/5'}`}>
+    <div
+      className="rounded-2xl border transition-all duration-300"
+      style={isActive ? {
+        borderColor: 'rgba(37,151,188,0.6)',
+        background: 'rgba(2,87,123,0.2)',
+      } : {
+        borderColor: 'rgba(255,255,255,0.1)',
+        background: 'rgba(255,255,255,0.04)',
+      }}
+    >
       {/* Header */}
       <div className="flex items-start gap-3 p-5">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             {isActive && (
-              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+              <span
+                className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border"
+                style={{ background: 'rgba(37,151,188,0.15)', color: '#2597BC', borderColor: 'rgba(37,151,188,0.4)' }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#2597BC' }} />
                 Actief
               </span>
             )}
@@ -90,22 +107,24 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
           {!isActive && (
             <button
               onClick={() => onActivate(q.id)}
-              title="Activeer"
-              className="p-2 rounded-lg hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 transition-colors"
+              title="Activeer deze vraag"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #2597BC, #02577B)' }}
             >
-              <RotateCcw className="w-4 h-4" />
+              <Zap className="w-3.5 h-3.5" />
+              Activeer
             </button>
           )}
           <button
             onClick={() => onDelete(q.id)}
             title="Verwijder"
-            className="p-2 rounded-lg hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+            className="p-2 rounded-lg transition-colors text-white/20 hover:text-red-400 hover:bg-red-500/10"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => setExpanded(v => !v)}
-            className="p-2 rounded-lg hover:bg-white/10 text-white/30 hover:text-white transition-colors"
+            className="p-2 rounded-lg transition-colors text-white/30 hover:text-white hover:bg-white/10"
           >
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -114,7 +133,7 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
 
       {/* Stats */}
       {expanded && (
-        <div className="px-5 pb-5 border-t border-white/5 pt-4">
+        <div className="px-5 pb-5 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
           <div className="grid gap-2 mb-6">
             {(q.answers as AnswerWithStats[]).map((a, i) => {
               const pct = q.total_votes > 0 ? Math.round((a.vote_count / q.total_votes) * 100) : 0
@@ -126,7 +145,7 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
                       <span className="text-white/70">{a.text}</span>
                       <span className="text-white/40 tabular-nums">{a.vote_count} ({pct}%)</span>
                     </div>
-                    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{ width: `${pct}%`, background: CHART_COLORS[i % CHART_COLORS.length] }}
@@ -144,8 +163,8 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
                 <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip
-                  contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'white' }}
-                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  contentStyle={{ background: '#1a2a35', border: '1px solid rgba(37,151,188,0.3)', borderRadius: 8, color: 'white' }}
+                  cursor={{ fill: 'rgba(37,151,188,0.05)' }}
                 />
                 <Bar dataKey="votes" radius={[6, 6, 0, 0]}>
                   {chartData.map((_, i) => (
@@ -191,9 +210,9 @@ function AddQuestionModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#1a1a2e] rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="rounded-2xl w-full max-w-lg border shadow-2xl" style={{ background: '#1e2a30', borderColor: 'rgba(37,151,188,0.2)' }}>
+        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
           <h2 className="text-lg font-semibold text-white">Nieuwe vraag</h2>
           <button onClick={onClose} className="text-white/30 hover:text-white transition-colors">
             <X className="w-5 h-5" />
@@ -208,7 +227,8 @@ function AddQuestionModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
               onChange={e => setQuestionText(e.target.value)}
               placeholder="Typ hier je vraag..."
               rows={2}
-              className="w-full rounded-xl px-4 py-3 bg-white/10 text-white placeholder-white/20 outline-none border border-white/10 focus:border-indigo-500/50 transition-colors resize-none"
+              className="w-full rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none border transition-colors resize-none"
+              style={{ background: 'rgba(2,87,123,0.15)', borderColor: 'rgba(37,151,188,0.25)' }}
             />
           </div>
 
@@ -222,7 +242,8 @@ function AddQuestionModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
                     value={a}
                     onChange={e => setAnswers(prev => prev.map((v, j) => j === i ? e.target.value : v))}
                     placeholder={`Antwoord ${String.fromCharCode(65 + i)}`}
-                    className="flex-1 rounded-xl px-4 py-2.5 bg-white/10 text-white placeholder-white/20 outline-none border border-white/10 focus:border-indigo-500/50 transition-colors"
+                    className="flex-1 rounded-xl px-4 py-2.5 text-white placeholder-white/20 outline-none border transition-colors"
+                    style={{ background: 'rgba(2,87,123,0.15)', borderColor: 'rgba(37,151,188,0.25)' }}
                   />
                   {answers.length > 2 && (
                     <button type="button" onClick={() => setAnswers(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-red-400 transition-colors">
@@ -235,7 +256,8 @@ function AddQuestionModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
                 <button
                   type="button"
                   onClick={() => setAnswers(prev => [...prev, ''])}
-                  className="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors mt-1 ml-7"
+                  className="flex items-center gap-2 text-sm transition-colors mt-1 ml-7 hover:opacity-80"
+                  style={{ color: '#2597BC' }}
                 >
                   <Plus className="w-4 h-4" /> Antwoord toevoegen
                 </button>
@@ -250,7 +272,8 @@ function AddQuestionModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
             <button
               type="submit"
               disabled={saving || !questionText.trim() || answers.filter(a => a.trim()).length < 2}
-              className="flex-1 rounded-xl py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
+              className="flex-1 rounded-xl py-2.5 text-white font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #2597BC, #02577B)' }}
             >
               {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
               Opslaan
@@ -321,16 +344,17 @@ export default function AdminPage() {
   const inactive = questions.filter(q => !q.is_active)
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-2xl mx-auto">
+    <div className="min-h-screen px-4 py-8 max-w-2xl mx-auto" style={{ background: '#2D2D32' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <div className="text-xs font-semibold tracking-widest text-white/20 uppercase mb-1">VRD Questionnaire</div>
+          <div className="text-xs font-semibold tracking-widest uppercase mb-0.5" style={{ color: '#2597BC' }}>VRD Metaalrecycling</div>
           <h1 className="text-2xl font-bold text-white">Admin</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-colors shadow-lg"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-semibold text-sm transition-all shadow-lg hover:opacity-90"
+          style={{ background: 'linear-gradient(135deg, #2597BC, #02577B)' }}
         >
           <Plus className="w-4 h-4" />
           Nieuwe vraag
@@ -339,22 +363,20 @@ export default function AdminPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-white/20 rounded-full animate-spin" style={{ borderTopColor: '#2597BC' }} />
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {/* Active */}
           {active && (
             <section>
-              <h2 className="text-xs font-semibold tracking-widest text-white/30 uppercase mb-3">Actieve vraag</h2>
+              <h2 className="text-xs font-semibold tracking-widest uppercase mb-3 text-white/30">Actieve vraag</h2>
               <QuestionCard q={active} onActivate={handleActivate} onDelete={handleDelete} isActive />
             </section>
           )}
 
-          {/* Inactive */}
           {inactive.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold tracking-widest text-white/30 uppercase mb-3">Vorige vragen</h2>
+              <h2 className="text-xs font-semibold tracking-widest uppercase mb-3 text-white/30">Vorige vragen</h2>
               <div className="flex flex-col gap-3">
                 {inactive.map(q => (
                   <QuestionCard key={q.id} q={q} onActivate={handleActivate} onDelete={handleDelete} isActive={false} />
