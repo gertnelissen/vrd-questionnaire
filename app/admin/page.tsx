@@ -87,7 +87,7 @@ function QuestionCard({ q, onActivate, onDelete, onEdit, isActive, theme }: {
   isActive: boolean
   theme: Theme
 }) {
-  const [expanded, setExpanded] = useState(isActive)
+  const [expanded, setExpanded] = useState(true)
 
   return (
     <div className="rounded-2xl border transition-all duration-300" style={{
@@ -104,8 +104,11 @@ function QuestionCard({ q, onActivate, onDelete, onEdit, isActive, theme }: {
                 Actief
               </span>
             )}
-            <span className="text-xs" style={{ color: t.textMuted(theme) }}>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: t.bar(theme), color: t.textMuted(theme) }}>
               {q.total_votes} stem{q.total_votes !== 1 ? 'men' : ''}
+            </span>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: t.bar(theme), color: t.textMuted(theme) }}>
+              {q.answers.length} {q.answers.length === 1 ? 'antwoord' : 'antwoorden'}
             </span>
           </div>
           <p className="font-medium leading-snug" style={{ color: t.text(theme) }}>{q.text}</p>
@@ -333,6 +336,10 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState<Theme>('dark')
 
+  useEffect(() => {
+    document.body.style.background = t.bg(theme)
+  }, [theme])
+
   const fetchQuestions = useCallback(async () => {
     const { data: qs } = await supabase
       .from('questions')
@@ -390,11 +397,11 @@ export default function AdminPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setTheme(th => th === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-lg transition-colors hover:bg-black/10"
-            style={{ color: t.textMuted(theme) }}
-            title="Wissel thema"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-black/10"
+            style={{ color: t.textMuted(theme), border: `1px solid ${t.border(theme)}` }}
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            {theme === 'dark' ? 'Licht thema' : 'Donker thema'}
           </button>
           <button
             onClick={() => setShowModal(true)}

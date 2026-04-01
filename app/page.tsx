@@ -104,8 +104,8 @@ export default function ConsumerPage() {
                 border: '2px solid rgba(37,151,188,0.35)',
               }}
               className={`
-                relative w-full h-full rounded-3xl px-8 text-3xl font-bold text-center
-                transition-all duration-300 select-none flex flex-col items-center justify-center gap-2
+                relative w-full h-full rounded-3xl px-6 text-center
+                transition-all duration-300 select-none flex flex-col items-center justify-center gap-3
                 ${isVoted
                   ? 'text-white scale-[1.01]'
                   : isDisabled
@@ -115,15 +115,21 @@ export default function ConsumerPage() {
               `}
             >
               {isVoted && (
-                <CheckCircle className="absolute top-5 right-5 w-7 h-7 text-white/80" />
+                <CheckCircle className="absolute top-5 right-5 w-8 h-8 text-white/80" />
               )}
               <span
-                className="text-lg font-semibold"
-                style={{ color: isVoted ? 'rgba(255,255,255,0.65)' : 'rgba(37,151,188,0.8)' }}
+                className="text-2xl font-bold"
+                style={{ color: isVoted ? 'rgba(255,255,255,0.65)' : 'rgba(37,151,188,0.9)' }}
               >
                 {String.fromCharCode(65 + i)}
               </span>
-              <span style={{ color: isDisabled && !isVoted ? 'rgba(255,255,255,0.2)' : 'white' }}>
+              <span
+                className="font-bold leading-tight"
+                style={{
+                  fontSize: 'clamp(1.5rem, 3.5vw, 2.8rem)',
+                  color: isDisabled && !isVoted ? 'rgba(255,255,255,0.2)' : 'white',
+                }}
+              >
                 {answer.text}
               </span>
             </button>
