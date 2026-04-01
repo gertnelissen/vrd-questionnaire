@@ -143,7 +143,7 @@ export default function ConsumerPage() {
               <span
                 className="font-bold leading-tight"
                 style={{
-                  fontSize: 'clamp(1.5rem, 3.5vw, 2.8rem)',
+                  fontSize: 'clamp(1.8rem, 4.5vw, 3.5rem)',
                   color: isVoted ? 'white' : isDisabled ? colors.textMid(theme) : colors.text(theme),
                 }}
               >
