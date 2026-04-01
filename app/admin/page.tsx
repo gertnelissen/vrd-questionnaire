@@ -2,9 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { supabase, type Question, type Answer } from '@/lib/supabase'
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
-} from 'recharts'
 import { Plus, Trash2, CheckCircle2, Zap, ChevronDown, ChevronUp, X } from 'lucide-react'
 
 const ADMIN_PASSWORD = '0852'
@@ -69,11 +66,6 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
   isActive: boolean
 }) {
   const [expanded, setExpanded] = useState(isActive)
-
-  const chartData = (q.answers as AnswerWithStats[]).map(a => ({
-    name: a.text.length > 20 ? a.text.slice(0, 20) + '…' : a.text,
-    votes: a.vote_count,
-  }))
 
   return (
     <div
@@ -157,23 +149,6 @@ function QuestionCard({ q, onActivate, onDelete, isActive }: {
             })}
           </div>
 
-          {q.total_votes > 0 && (
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ background: '#1a2a35', border: '1px solid rgba(37,151,188,0.3)', borderRadius: 8, color: 'white' }}
-                  cursor={{ fill: 'rgba(37,151,188,0.05)' }}
-                />
-                <Bar dataKey="votes" radius={[6, 6, 0, 0]}>
-                  {chartData.map((_, i) => (
-                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
         </div>
       )}
     </div>

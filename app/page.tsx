@@ -61,25 +61,25 @@ export default function ConsumerPage() {
   const answers = question.answers ?? []
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-10 relative overflow-hidden" style={{ background: '#2D2D32' }}>
+    <div className="min-h-screen flex flex-col items-center px-6 py-6 relative overflow-hidden" style={{ background: '#2D2D32' }}>
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top, rgba(2,87,123,0.3) 0%, transparent 60%)' }} />
 
       {/* Branding */}
-      <div className="mb-1 text-xs font-semibold tracking-widest uppercase" style={{ color: '#2597BC' }}>
+      <div className="mt-2 mb-0.5 text-xs font-semibold tracking-widest uppercase" style={{ color: '#2597BC' }}>
         VRD Metaalrecycling
       </div>
-      <div className="mb-8 text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+      <div className="mb-5 text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
         Wij betalen voor oude metalen
       </div>
 
       {/* Question */}
-      <h1 className="text-center text-4xl font-bold text-white mb-12 max-w-3xl leading-snug">
+      <h1 className="text-center text-4xl font-bold text-white mb-5 max-w-4xl leading-snug">
         {question.text}
       </h1>
 
       {/* Answers */}
-      <div className={`w-full max-w-5xl grid gap-5 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+      <div className={`w-full flex-1 grid gap-4 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
         {answers.map((answer, i) => {
           const isVoted = voted === answer.id
           const isDisabled = voted !== null
@@ -91,7 +91,7 @@ export default function ConsumerPage() {
               disabled={isDisabled}
               style={isVoted ? {
                 background: '#2597BC',
-                boxShadow: '0 0 50px rgba(37,151,188,0.5)',
+                boxShadow: '0 0 60px rgba(37,151,188,0.5)',
                 border: '2px solid #2597BC',
               } : isDisabled ? {
                 background: 'rgba(255,255,255,0.04)',
@@ -101,20 +101,20 @@ export default function ConsumerPage() {
                 border: '2px solid rgba(37,151,188,0.3)',
               }}
               className={`
-                relative rounded-2xl px-8 py-10 text-2xl font-semibold text-center
-                transition-all duration-300 select-none
+                relative rounded-3xl px-8 text-3xl font-semibold text-center
+                transition-all duration-300 select-none flex flex-col items-center justify-center
                 ${isVoted
-                  ? 'text-white scale-[1.02]'
+                  ? 'text-white scale-[1.01]'
                   : isDisabled
                     ? 'text-white/25 cursor-default'
-                    : 'text-white cursor-pointer hover:scale-[1.02] active:scale-[0.98]'
+                    : 'text-white cursor-pointer hover:scale-[1.01] active:scale-[0.99]'
                 }
               `}
             >
               {isVoted && (
-                <CheckCircle className="absolute top-4 right-4 w-6 h-6 text-white/80" />
+                <CheckCircle className="absolute top-5 right-5 w-7 h-7 text-white/80" />
               )}
-              <span className="block text-sm font-normal mb-2" style={{ color: isVoted ? 'rgba(255,255,255,0.6)' : 'rgba(37,151,188,0.7)' }}>
+              <span className="block text-base font-normal mb-3" style={{ color: isVoted ? 'rgba(255,255,255,0.6)' : 'rgba(37,151,188,0.7)' }}>
                 {String.fromCharCode(65 + i)}
               </span>
               {answer.text}
@@ -125,7 +125,7 @@ export default function ConsumerPage() {
 
       {/* Feedback */}
       <div
-        className={`mt-10 text-sm font-medium transition-opacity duration-500 flex items-center gap-2 ${voted ? 'opacity-100' : 'opacity-0'}`}
+        className={`mt-4 text-sm font-medium transition-opacity duration-500 flex items-center gap-2 ${voted ? 'opacity-100' : 'opacity-0'}`}
         style={{ color: '#2597BC' }}
       >
         <CheckCircle className="w-4 h-4" />
