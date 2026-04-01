@@ -74,14 +74,14 @@ export default function ConsumerPage() {
       </div>
 
       {/* Question */}
-      <h1 className="text-center text-5xl font-bold text-white mb-6 max-w-4xl leading-tight">
+      <h1 className="text-center text-6xl font-bold text-white mb-5 max-w-4xl leading-tight">
         {question.text}
       </h1>
 
-      {/* Answers — fixed height so buttons don't overflow */}
+      {/* Answers */}
       <div
         className={`w-full grid gap-4 ${answers.length <= 2 ? 'grid-cols-2' : answers.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}
-        style={{ height: '52vh' }}
+        style={{ height: '58vh' }}
       >
         {answers.map((answer, i) => {
           const isVoted = voted === answer.id
